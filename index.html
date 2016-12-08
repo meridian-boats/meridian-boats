@@ -15,7 +15,6 @@
 	<script src="./js/bootstrap.min.js"></script>
 	<script src="./js/blocs.min.js"></script>
 	<script src="./js/jqBootstrapValidation.js"></script>
-	<script src="./js/formHandler.js"></script>
     <title>Home</title>
 
     
@@ -150,7 +149,7 @@
 		<div class="row voffset-md">
 			<div class="col-sm-12">
 				<h2 class="mg-md text-center">
-					Možnsti
+					Možnosti
 				</h2>
 			</div>
 		</div>
@@ -194,7 +193,7 @@
 						</ul>
 					</div>
 					<div class="panel-footer">
-						<a class="btn btn-d btn-lg btn-block option-btn">Zvolit<span class="special-tag-for-editing-text-with-html"></span></a>
+						<a class="btn btn-d btn-lg btn-block option-btn" data-variant="1">Zvolit<span class="special-tag-for-editing-text-with-html"></span></a>
 					</div>
 				</div>
 			</div>
@@ -230,7 +229,7 @@
 						</ul>
 					</div>
 					<div class="panel-footer">
-						<a class="btn btn-d btn-lg btn-block option-btn">Zvolit</a>
+						<a class="btn btn-d btn-lg btn-block option-btn" data-variant="2">Zvolit</a>
 					</div>
 				</div>
 			</div>
@@ -266,7 +265,7 @@
 						</ul>
 					</div>
 					<div class="panel-footer">
-						<a class="btn btn-d btn-lg btn-block option-btn">Zvolit</a>
+						<a class="btn btn-d btn-lg btn-block option-btn" data-variant="3">Zvolit</a>
 					</div>
 				</div>
 			</div>
@@ -285,7 +284,7 @@
 	<div class="container bloc-sm">
 		<div class="row">
 			<div class="col-sm-12">
-				<h2 class="mg-md text-center">
+				<h2 id="order_text" class="mg-md text-center">
 					Objednávka
 				</h2>
 			</div>
@@ -299,23 +298,23 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-12">
-				<form id="form_2" novalidate>
+				<form id="order_form" novalidate>
 					<div class="form-group">
 						<label>
 							Jméno<br>
 						</label>
-						<input id="name2" class="form-control" required />
+						<input id="name" class="form-control" required />
 					</div>
 					<div class="form-group">
 						<label>
 							Telefoní číslo
 						</label>
-						<input id="email2" class="form-control" required />
+						<input id="phone" class="form-control" required />
 					</div>
 					<div class="form-group">
 						<label>
 							Poznámky<br>
-						</label><textarea id="note2" class="form-control" rows="4" cols="50"></textarea>
+						</label><textarea id="note" class="form-control" rows="4" cols="50"></textarea>
 					</div> 
 					<button class="bloc-button btn btn-d btn-lg btn-block" type="submit">
 						Objednat voucher
@@ -358,15 +357,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/3.6.3/firebase.js"></script>
 <script>
-	// Initialize Firebase
-	var config = {
-	apiKey: "AIzaSyAuE-pmYh9OqVjS-Pzo9P6hJEREmmG9HBo",
-	authDomain: "mokrs-f6dac.firebaseapp.com",
-	databaseURL: "https://mokrs-f6dac.firebaseio.com",
-	storageBucket: "mokrs-f6dac.appspot.com",
-	messagingSenderId: "868135681777"
-	};
-	firebase.initializeApp(config);
+	var variant = "nezvoleno";
 
 	var btns = document.querySelectorAll('.option-btn');
 	for (var i = 0; i < btns.length; i++) {
@@ -375,14 +366,33 @@
 				btns[j].style.backgroundColor = '';
 			}
 			this.style.backgroundColor = '#005f56';
+			variant = this.dataset.variant;
 		};
 	}
 
-	firebase.database().ref('orders/' + userId).set({
-		username: name,
-		email: email,
-		profile_picture : imageUrl
-	});
+	document.getElementById('order_form').onsubmit = function(e) {
+
+
+		e.preventDefault();
+
+		var name = this.name.value;
+		var phone = this.phone.value;
+		var note = this.note.value;
+
+		$.ajax({
+			url: "https://formspree.io/meridianboats@email.cz", 
+			method: "POST",
+			data: {name: name, phone: phone, note: note, variant: variant},
+			dataType: "json"
+		});
+		this.style.display = 'none';
+
+		document.getElementById('order_text').innerHTML = "Vaše objednávka byla odeslána"
+
+		return false;
+	}
+
+
 </script>
 </body>
 </html>
